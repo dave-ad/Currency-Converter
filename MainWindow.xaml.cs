@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace CurrencyConverter_Static
@@ -13,7 +14,6 @@ namespace CurrencyConverter_Static
             InitializeComponent();
             BindCurrency();
 
-            lblCurrency.Content = "Hello World";
         }
 
         private void BindCurrency()
@@ -103,14 +103,30 @@ namespace CurrencyConverter_Static
             }
         }
 
+        //Clear button click event
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
-            lblCurrency.Content = "";
+            //ClearControls method  is used to clear all control value
+            ClearControls();
         }
 
-        private void NumberValidationTextBox(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        private void NumberValidationTextBox(object sender, System.Windows.Input.TextCompositionEventArgs e) //Allow Only Integer in Text Box
         {
-            
+            //Regular Expression is used to add regex.
+            // Add Library using System.Text.RegularExpressions;
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void ClearControls()
+        {
+            txtCurrency.Text = string.Empty;
+            if (cmbFromCurrency.Items.Count > 0)
+                cmbFromCurrency.SelectedIndex = 0;
+            if (cmbToCurrency.Items.Count > 0)
+                cmbToCurrency.SelectedIndex = 0;
+            lblCurrency.Content = "";
+            txtCurrency.Focus();
         }
     }
 }
