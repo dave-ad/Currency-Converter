@@ -14,3 +14,7 @@ C:\Users\David\source\repos\CurrencyConverter_Static\obj\Debug\CurrencyConverter
 C:\Users\David\source\repos\CurrencyConverter_Static\obj\Debug\CurrencyConverter_Static.csproj.CoreCompileInputs.cache
 C:\Users\David\source\repos\CurrencyConverter_Static\obj\Debug\CurrencyConverter_Static.exe
 C:\Users\David\source\repos\CurrencyConverter_Static\obj\Debug\CurrencyConverter_Static.pdb
+C:\Users\David\source\repos\CurrencyConverter_Static\bin\Debug\FontAwesome.WPF.dll
+C:\Users\David\source\repos\CurrencyConverter_Static\bin\Debug\FontAwesome.WPF.xml
+C:\Users\David\source\repos\CurrencyConverter_Static\obj\Debug\App.baml
+C:\Users\David\source\repos\CurrencyConverter_Static\obj\Debug\CurrencyConverter_Static.csproj.CopyComplete
