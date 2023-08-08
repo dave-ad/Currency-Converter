@@ -8,6 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/icon-preview.svg")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("database/currencyconverter.mdf")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("database/currencyconverter_log.ldf")]
 
 

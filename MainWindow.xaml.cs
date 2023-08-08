@@ -12,8 +12,7 @@ namespace CurrencyConverter_Static
         public MainWindow()
         {
             InitializeComponent();
-  
-
+            BindCurrency();
         }
 
         private void BindCurrency()
