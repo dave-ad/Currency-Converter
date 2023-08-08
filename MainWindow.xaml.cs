@@ -1,4 +1,6 @@
-﻿using System.Data;
+﻿using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
 using System.Text.RegularExpressions;
 using System.Windows;
 
@@ -9,36 +11,70 @@ namespace CurrencyConverter_Static
     /// </summary>
     public partial class MainWindow : Window
     {
+        SqlConnection con = new SqlConnection(); // Create Object for SqlConnection
+        SqlCommand cmd = new SqlCommand(); // Create Object for SqlCommand
+        SqlDataAdapter adapter = new SqlDataAdapter(); // Create Object for SqlAdapter
+
+        private int CurrencyId = 0; // Declare CurrencyId with int datatype and assign value 0
+        private double FromAmount = 0; // Declare FromAmount with double datatype and assign value 0
+        private double ToAmount = 0; // Declare ToAmount with double datatype and assign value 0
+
+        //public object ConfrigurationManager { get; private set; }
+
         public MainWindow()
         {
             InitializeComponent();
             BindCurrency();
         }
 
+        public void mycon()
+        {
+            string Conn = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString; // DataBase Connection String
+            con = new SqlConnection(Conn);
+            con.Open(); //Connection open
+        }
+
         private void BindCurrency()
         {
-            DataTable dtCurrency = new DataTable();
-            dtCurrency.Columns.Add("Text");
-            dtCurrency.Columns.Add("Value");
-            // Add rows to the data table with text and value
-            dtCurrency.Rows.Add("--SELECT--", 0);
-            dtCurrency.Rows.Add("INR", 1);
-            dtCurrency.Rows.Add("USD", 799.66);
-            dtCurrency.Rows.Add("EUR", 896.73);
-            dtCurrency.Rows.Add("GBP", 1031.90);
+            mycon();
+            // Create an object for DataTable
+            DataTable dt = new DataTable();
+            // Write query to get data from Currency_Master table
+            cmd = new SqlCommand("selct Id, CurrencyName from Currency_Master", con);
+            // CommandType define which type of commnd we use for write a query
+            cmd.CommandType = CommandType.Text;
+
+            // It is accepting a parameeter that contains the command text of the object's selectCommand property
+            adapter = new SqlDataAdapter(cmd);
+            adapter.Fill(dt);
+
+            // Create an object for DataRow
+            DataRow newRow = dt.NewRow();
+            // Assign a value to Id column
+            newRow["Id"] = 0;
+            // Assign value to CurrencyName column
+            newRow["CurrencyName"] = "--SELECT--";
+
+            // Insert a new row in dt with data at a 0 position
+            dt.Rows.InsertAt(newRow, 0);
+
+            // dt is ot null and rows count greater than 0
+            if(dt != null && dt.Rows.Count > 0)
+            {
+                // Assign the datatable data to combobox using ItemSource property
+                cmbFromCurrency.ItemsSource = dt.DefaultView;
+                cmbToCurrency.ItemsSource = dt.DefaultView;
+            }
+            con.Close();
 
             //The data to currency Combobox is assigned from datatable
-            cmbFromCurrency.ItemsSource = dtCurrency.DefaultView;
-            //DisplayMemberPath Property is used to display data in Combobox
-            cmbFromCurrency.DisplayMemberPath = "Text";
-            //SelectedValuePath property is used to set the value in Combobox
-            cmbFromCurrency.SelectedValuePath = "Value";
-            //SelectedIndex property is used to bind hint in the Combobox. The default value is Select.
+            //Value Properties are used to display data in Combobox
+            cmbFromCurrency.DisplayMemberPath = "CurrencyName";
+            cmbFromCurrency.SelectedValuePath = "Id";
             cmbFromCurrency.SelectedIndex = 0;
 
-            cmbToCurrency.ItemsSource = dtCurrency.DefaultView;
-            cmbToCurrency.DisplayMemberPath = "Text";
-            cmbToCurrency.SelectedValuePath = "Value";
+            cmbToCurrency.DisplayMemberPath = "CurrencyName";
+            cmbToCurrency.SelectedValuePath = "Id";
             cmbToCurrency.SelectedIndex = 0;
         }
 
