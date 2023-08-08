@@ -18,4 +18,3 @@ C:\Users\David\source\repos\CurrencyConverter_Static\bin\Debug\FontAwesome.WPF.d
 C:\Users\David\source\repos\CurrencyConverter_Static\bin\Debug\FontAwesome.WPF.xml
 C:\Users\David\source\repos\CurrencyConverter_Static\obj\Debug\App.baml
 C:\Users\David\source\repos\CurrencyConverter_Static\obj\Debug\CurrencyConverter_Static.csproj.CopyComplete
-C:\Users\David\source\repos\CurrencyConverter_Static\obj\Debug\CurrencyConverter_Static_Content.g.cs

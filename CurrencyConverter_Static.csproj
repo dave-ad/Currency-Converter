@@ -105,8 +105,11 @@
     <Resource Include="Images\Logo.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Images\icon-preview.svg" />
-    <Resource Include="Images\money.jpeg" />
+    <Resource Include="Images\delete-button.png" />
+    <Resource Include="Images\edit-button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\money.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
