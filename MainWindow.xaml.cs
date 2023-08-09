@@ -27,6 +27,7 @@ namespace CurrencyConverter_Static
         {
             InitializeComponent();
             BindCurrency();
+            GetData();
         }
         // CRUD
 
@@ -184,7 +185,7 @@ namespace CurrencyConverter_Static
                     return;
                 }
                 else
-                {
+                {   // for when the currency ID is greater than zero
                     if (CurrencyId > 0) // Code for Update button. Here check CurrencyId greater than zero  than it is go for update
                     {
                         if (MessageBox.Show("Are you sure you want to update?", "Information", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes) // Show confirmation message
@@ -202,7 +203,7 @@ namespace CurrencyConverter_Static
                             MessageBox.Show("Data updated successfully", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
 
-                    }
+                    }   // for when the currency ID is not greater than zero - we have to make sure we add a new line
                     else // Save Button 
                     {
                         if (MessageBox.Show("Are you sure you want to save ?","Information", MessageBoxButton.YesNo, MessageBoxImage.Question ) == MessageBoxResult.Yes)
@@ -229,7 +230,7 @@ namespace CurrencyConverter_Static
             }
         }
 
-        private void ClearMaster() //This Method is Used for Clear All the input Which User Entered in Currency Master tab
+        private void ClearMaster() //This Method is Used to Clear All the input Which User Entered in Currency Master tab
         {
             try
             {
@@ -253,7 +254,8 @@ namespace CurrencyConverter_Static
             DataTable dt = new DataTable();     // Create DataTable object
             cmd = new SqlCommand("SELECT * FROM Currency_Master", con);     // Write Sql Query for Get data from databse table.
             cmd.CommandType = CommandType.Text;     // CommandType define which type of command execute like Text, StoredProcedure
-            SqlDataAdapter adapter = new SqlDataAdapter(cmd);      //  It is accept a parameter that contains the command text of the object's SelectCommand
+            /// SqlDataAdapter adapter = new SqlDataAdapter(cmd);      //  It is accept a parameter that contains the command text of the object's SelectCommand
+            adapter = new SqlDataAdapter(cmd);      //  It is accept a parameter that contains the command text of the object's SelectCommand
             adapter.Fill(dt);       // The DataAdapter serves as a bridge between a DataSet and a data source for retrieving and saving
             if (dt != null && dt.Rows.Count > 0)        // dt is not null and rows count greater than 0
                 dgvCurrency.ItemsSource = dt.DefaultView;       // Assign DataTable dataTable data to dgvCurrency using ItemSource Property.
@@ -274,7 +276,7 @@ namespace CurrencyConverter_Static
             }
         }
 
-        private void dgvCurrency_SelectedCellsChanged(object sender, System.Windows.Controls.SelectedCellsChangedEventArgs e)
+        private void dgvCurrency_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
         {
             try
             {
