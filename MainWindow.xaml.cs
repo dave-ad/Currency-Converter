@@ -1,8 +1,10 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace CurrencyConverter_Static
 {
@@ -26,6 +28,7 @@ namespace CurrencyConverter_Static
             InitializeComponent();
             BindCurrency();
         }
+        // CRUD
 
         public void mycon()
         {
@@ -40,7 +43,7 @@ namespace CurrencyConverter_Static
             // Create an object for DataTable
             DataTable dt = new DataTable();
             // Write query to get data from Currency_Master table
-            cmd = new SqlCommand("selct Id, CurrencyName from Currency_Master", con);
+            cmd = new SqlCommand("select Id, CurrencyName from Currency_Master", con);
             // CommandType define which type of commnd we use for write a query
             cmd.CommandType = CommandType.Text;
 
@@ -166,17 +169,156 @@ namespace CurrencyConverter_Static
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                if (txtAmount.Text == null || txtAmount.Text.Trim() == "")
+                {
+                    MessageBox.Show("Please enter amount", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    txtAmount.Focus();
+                    return;
+                }
+                else if (txtCurrencyName.Text == null || txtCurrencyName.Text.Trim() == "")
+                {
+                    MessageBox.Show("Please enter currency name","Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    txtCurrencyName.Focus(); 
+                    return;
+                }
+                else
+                {
+                    if (CurrencyId > 0) // Code for Update button. Here check CurrencyId greater than zero  than it is go for update
+                    {
+                        if (MessageBox.Show("Are you sure you want to update?", "Information", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes) // Show confirmation message
+                        {
+                            mycon();
+                            DataTable dt = new DataTable();
+                            cmd = new SqlCommand("UPDATE Currency_Master SET Amount = @Amount, CurrencyName = CurrencyName WHERE Id = @Id", con); // Update query record Update using Id
+                            cmd.CommandType = CommandType.Text;
+                            cmd.Parameters.AddWithValue("@Id", CurrencyId);
+                            cmd.Parameters.AddWithValue("@Amount", txtAmount);
+                            cmd.Parameters.AddWithValue("@CurrencyName", txtCurrencyName.Text);
+                            cmd.ExecuteNonQuery();
+                            con.Close();
 
+                            MessageBox.Show("Data updated successfully", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+
+                    }
+                    else // Save Button 
+                    {
+                        if (MessageBox.Show("Are you sure you want to save ?","Information", MessageBoxButton.YesNo, MessageBoxImage.Question ) == MessageBoxResult.Yes)
+                        {
+                            mycon();
+                            cmd = new SqlCommand("INSERT INTO Currency_Master(Amount, CurrencyName) VALUES(@Amount, @CurrencyName)", con); // Insert Query for Save data in  the Table
+                            cmd.CommandType = CommandType.Text;
+                            cmd.Parameters.AddWithValue("@Amount", txtAmount.Text);
+                            cmd.Parameters.AddWithValue("@CurrencyName", txtCurrencyName.Text);
+                            cmd.ExecuteNonQuery();
+                            con.Close();
+
+                            MessageBox.Show("Data saved successfully", "Informartion", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                        }
+                    }
+                    ClearMaster();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error); 
+                return;
+            }
+        }
+
+        private void ClearMaster() //This Method is Used for Clear All the input Which User Entered in Currency Master tab
+        {
+            try
+            {
+                txtAmount.Text = string.Empty;
+                txtCurrencyName.Text = string.Empty;
+                btnSave.Content = "Save";
+                GetData();
+                CurrencyId = 0;
+                BindCurrency();
+                txtAmount.Focus();
+            }
+            catch (Exception ex)    
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public void GetData() // Bind Data in DataGrid View.
+        {
+            mycon();    // mycon() method is used for connect with database and open database connection
+            DataTable dt = new DataTable();     // Create DataTable object
+            cmd = new SqlCommand("SELECT * FROM Currency_Master", con);     // Write Sql Query for Get data from databse table.
+            cmd.CommandType = CommandType.Text;     // CommandType define which type of command execute like Text, StoredProcedure
+            SqlDataAdapter adapter = new SqlDataAdapter(cmd);      //  It is accept a parameter that contains the command text of the object's SelectCommand
+            adapter.Fill(dt);       // The DataAdapter serves as a bridge between a DataSet and a data source for retrieving and saving
+            if (dt != null && dt.Rows.Count > 0)        // dt is not null and rows count greater than 0
+                dgvCurrency.ItemsSource = dt.DefaultView;       // Assign DataTable dataTable data to dgvCurrency using ItemSource Property.
+            else
+                dgvCurrency.ItemsSource = null;
+            con.Close();        // Database connection Close
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                ClearMaster();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void dgvCurrency_SelectedCellsChanged(object sender, System.Windows.Controls.SelectedCellsChangedEventArgs e)
         {
+            try
+            {
+                DataGrid grd = (DataGrid)sender; // Object for datagrid
+                DataRowView row_selected = grd.CurrentItem as DataRowView; // Object for datarowview
 
+                if (row_selected != null)
+                {
+                    if (dgvCurrency.Items.Count > 0)
+                    {
+                        if (grd.SelectedCells.Count > 0)
+                        {
+                            CurrencyId = Int32.Parse(row_selected["Id"].ToString());
+
+                            if (grd.SelectedCells[0].Column.DisplayIndex == 0)
+                            {
+                                txtAmount.Text = row_selected["Amount"].ToString();
+                                txtCurrencyName.Text = row_selected["CurrencyName"].ToString();
+                                btnSave.Content = "Update";
+                            }
+                            if (grd.SelectedCells[0].Column.DisplayIndex == 1)
+                            {
+                                if (MessageBox.Show("Are you sure you want to delete ?", "Informaton", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                                {
+                                    mycon();
+                                    DataTable dt = new DataTable();
+                                    cmd = new SqlCommand("DELETE FROM Currency_Master WHERE Id = @Id", con);
+                                    cmd.CommandType = CommandType.Text;
+                                    cmd.Parameters.AddWithValue("@Id", CurrencyId);
+                                    cmd.ExecuteNonQuery();
+                                    con.Close();
+
+                                    MessageBox.Show("Data deleted successfully", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                                    ClearMaster();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
