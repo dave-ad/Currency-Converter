@@ -21,3 +21,5 @@ C:\Users\David\source\repos\CurrencyConverter_Static\obj\Debug\CurrencyConverter
 C:\Users\David\source\repos\CurrencyConverter_Static\obj\Debug\CurrencyConverter_Static.csproj.CopyComplete
 C:\Users\David\source\repos\CurrencyConverter_Static\obj\Debug\CurrencyConverter_Static.exe
 C:\Users\David\source\repos\CurrencyConverter_Static\obj\Debug\CurrencyConverter_Static.pdb
+C:\Users\David\source\repos\CurrencyConverter_Static\bin\Debug\Newtonsoft.Json.dll
+C:\Users\David\source\repos\CurrencyConverter_Static\bin\Debug\Newtonsoft.Json.xml

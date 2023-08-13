@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -21,15 +24,65 @@ namespace CurrencyConverter_Static
         private double FromAmount = 0; // Declare FromAmount with double datatype and assign value 0
         private double ToAmount = 0; // Declare ToAmount with double datatype and assign value 0
 
-        //public object ConfrigurationManager { get; private set; }
+
+        Root val = new Root();
 
         public MainWindow()
         {
             InitializeComponent();
-            BindCurrency();
-            GetData();
+
+            // clearcontrols method is used to clear all control values
+            ClearControls();
+
+            // BindCurrency is used to bind currency name with the value in the Combobox
+            //BindCurrency();
+
+            GetValue();
+
+            //GetData();
         }
         // CRUD
+
+        private async void GetValue()
+        {
+            val = await GetData<Root>("https://openexchangerates.org/api/latest.json?app_id=916e25b6913949518da95354a5c27df9");
+            BindCurrency();
+        }
+
+        public static async Task<Root> GetData<T>(string url)
+        {
+            var myRoot = new Root();
+            try
+            {
+                // HttpClient class provides a base class for sending/receiving the http request/response from a URl.
+                using (var client = new HttpClient())
+                {
+                    // The time span to wait before the request times out.
+                    client.Timeout = TimeSpan.FromMinutes(1);
+
+                    // HttpsResponseMessage is a way of returning a  message/data from your action.
+                    HttpResponseMessage response = await client.GetAsync(url);
+                    // check API response code ok
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK) 
+                    {
+                        // Serialize the http content to a string as an aysnchronius operation.
+                        var ResponseString = await response.Content.ReadAsStringAsync();
+                        // JsonConvert.DeserializeObject to deserialize Json to C#
+                        var ResponseObject =JsonConvert.DeserializeObject<Root>(ResponseString);
+
+                        MessageBox.Show("Rates: " + ResponseString, "Information", MessageBoxButton.OK, MessageBoxImage.Information); // If amount TextBox
+
+                        return ResponseObject; //Return API response
+                    }
+                    return myRoot;
+                } 
+            }
+            catch
+            {
+
+                return myRoot;
+            }
+        }
 
         public void mycon()
         {
@@ -40,7 +93,52 @@ namespace CurrencyConverter_Static
 
         private void BindCurrency()
         {
-            mycon();
+            // +API
+            // Create an object for DataTable
+            DataTable dt = new DataTable();
+
+            // Add display column in DataTable
+            dt.Columns.Add("Text");
+
+            // Add the value column in the DataTable
+            //dt.Columns.Add("Value");
+
+            // Add value column in DataTable
+            dt.Columns.Add("Rate");
+
+            //Add rows in Datatable with text and value. set a value which are fetched from API
+            dt.Rows.Add("--SELECT--", 0);
+            dt.Rows.Add("INR", val.rates.INR);
+            dt.Rows.Add("USD", val.rates.USD);
+            dt.Rows.Add("NZD", val.rates.NZD);
+            dt.Rows.Add("JPY", val.rates.JPY);
+            dt.Rows.Add("EUR", val.rates.EUR);
+            dt.Rows.Add("CAD", val.rates.CAD);
+            dt.Rows.Add("ISK", val.rates.ISK);
+            dt.Rows.Add("PHP", val.rates.PHP);
+            dt.Rows.Add("DKK", val.rates.DKK);
+            dt.Rows.Add("CZK", val.rates.CZK);
+
+            //Datatable data assign From currency Combobox
+            cmbFromCurrency.ItemsSource = dt.DefaultView;
+
+            //DisplayMemberPath property is used to display data in Combobox
+            cmbFromCurrency.DisplayMemberPath = "Text";
+
+            //SelectedValuePath property is used for set value in Combobox
+            cmbFromCurrency.SelectedValuePath = "Rate";
+
+            //SelectedIndex property is used to bind Combobox it's default selected item is first
+            cmbFromCurrency.SelectedIndex = 0;
+
+            //All property set to To Currency Combobox as From Currency Combobox
+            cmbToCurrency.ItemsSource = dt.DefaultView;
+            cmbToCurrency.DisplayMemberPath = "Text";
+            cmbToCurrency.SelectedValuePath = "Rate";
+            cmbToCurrency.SelectedIndex = 0;
+
+            /* // +DataBase
+             * mycon();
             // Create an object for DataTable
             DataTable dt = new DataTable();
             // Write query to get data from Currency_Master table
@@ -79,12 +177,12 @@ namespace CurrencyConverter_Static
 
             cmbToCurrency.DisplayMemberPath = "CurrencyName";
             cmbToCurrency.SelectedValuePath = "Id";
-            cmbToCurrency.SelectedIndex = 0;
+            cmbToCurrency.SelectedIndex = 0;*/
         }
 
         private void Convert_Click(object sender, RoutedEventArgs e)
         {
-            //Create a variable as ConvertedValue with double data type to store currency converted value
+            //Declare ConvertedValue with double DataType for store currency converted value
             double ConvertedValue;
 
             //Check amount textbox is Null or Blank
@@ -135,7 +233,7 @@ namespace CurrencyConverter_Static
 
                 //Calculation for currency converter is From Currency value multiply(*) 
                 // with amount textbox value and then the total is divided(/) with To Currency value
-                ConvertedValue = (double.Parse(cmbFromCurrency.SelectedValue.ToString()) * double.Parse(txtCurrency.Text)) / double.Parse(cmbToCurrency.SelectedValue.ToString());
+                ConvertedValue = (double.Parse(cmbToCurrency.SelectedValue.ToString()) * double.Parse(txtCurrency.Text)) / double.Parse(cmbFromCurrency.SelectedValue.ToString());
 
                 //Show in label converted currency and converted currency name.
                 lblCurrency.Content = cmbToCurrency.Text + " " + ConvertedValue.ToString("N3");
