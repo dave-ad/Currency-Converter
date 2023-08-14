@@ -19,5 +19,6 @@ namespace CurrencyConverter_Static
         public double PHP { get; set; }
         public double DKK { get; set; }
         public double CZK { get; set; }
+        public double NGN { get; set; }
     }
 }

@@ -108,16 +108,17 @@ namespace CurrencyConverter_Static
 
             //Add rows in Datatable with text and value. set a value which are fetched from API
             dt.Rows.Add("--SELECT--", 0);
-            dt.Rows.Add("INR", val.rates.INR);
-            dt.Rows.Add("USD", val.rates.USD);
-            dt.Rows.Add("NZD", val.rates.NZD);
-            dt.Rows.Add("JPY", val.rates.JPY);
-            dt.Rows.Add("EUR", val.rates.EUR);
             dt.Rows.Add("CAD", val.rates.CAD);
-            dt.Rows.Add("ISK", val.rates.ISK);
-            dt.Rows.Add("PHP", val.rates.PHP);
-            dt.Rows.Add("DKK", val.rates.DKK);
             dt.Rows.Add("CZK", val.rates.CZK);
+            dt.Rows.Add("DKK", val.rates.DKK);
+            dt.Rows.Add("EUR", val.rates.EUR);
+            dt.Rows.Add("INR", val.rates.INR);
+            dt.Rows.Add("ISK", val.rates.ISK);
+            dt.Rows.Add("JPY", val.rates.JPY);
+            dt.Rows.Add("NGN", val.rates.NGN);
+            dt.Rows.Add("NZD", val.rates.NZD);
+            dt.Rows.Add("PHP", val.rates.PHP);
+            dt.Rows.Add("USD", val.rates.USD);
 
             //Datatable data assign From currency Combobox
             cmbFromCurrency.ItemsSource = dt.DefaultView;
